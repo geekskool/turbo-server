@@ -3,7 +3,8 @@ import test from 'tape'
 import App from '../lib/server'
 
 // Start App Server
-App.listen(5000)
+const app = new App()
+app.listen() // process.env.PORT || 5000
 
 test('responds to requests', async (t) => {
   t.plan(3)
@@ -17,6 +18,6 @@ test('responds to requests', async (t) => {
   t.false(error)
   t.equal(res.status, 200)
   t.equal(text, 'hello world')
-  // Shutdoqn App Server
-  App.close()
+  // Shutdown App Server
+  app.close()
 })
