@@ -10,14 +10,14 @@ test('responds to requests', async (t) => {
   t.plan(3)
   let res, text, error
   try {
-    res = await fetch('http://127.0.0.1:5000')
+    res = await fetch('http://127.0.0.1:5000/aa')
     text = await res.text()
   } catch (e) {
     error = e
   }
   t.false(error)
-  t.equal(res.status, 200)
-  t.equal(text, 'hello world')
+  t.equal(res.status, 404)
+  t.equal(text, 'Not Found')
   // Shutdown App Server
   app.close()
 })
