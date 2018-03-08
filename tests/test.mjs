@@ -11,6 +11,13 @@ test('responds to requests', async (t) => {
   let res, text, error
   try {
     res = await fetch('http://127.0.0.1:5000/aa')
+  /*
+    res = await fetch('http://127.0.0.1:5000', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({hello: 'world'})
+    })
+  */
     text = await res.text()
   } catch (e) {
     error = e
