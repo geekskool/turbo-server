@@ -1,11 +1,10 @@
 import fetch from 'node-fetch'
 import test from 'tape'
 import App from '../lib/server'
-import Router from '../lib/router'
 
 // Start App Server
 const app = new App()
-const router = new Router('/')
+const router = new App.Router('/')
 router.post('/', function () {
   this.res.send(this.body)
 })
