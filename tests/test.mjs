@@ -5,14 +5,25 @@ import App from '../lib/server'
 // Start App Server
 const app = new App()
 const router = new App.Router('/')
+
 router.post('/', function () {
   this.res.send(this.body)
 })
+
+router.post('/cookie', function () {
+  this.res.setCookie(this.body.name, this.body.value, {
+    httpOnly: true,
+    maxAge: 60 * 60 * 24 * 7 // 1 week
+  })
+  this.res.send(this.body)
+})
+
 app.addRouter(router)
+
 app.listen() // process.env.PORT || 5000
 
 test('responds to requests', async (t) => {
-  t.plan(9)
+  t.plan(12)
   let res, data, error
   try {
     res = await fetch('http://127.0.0.1:5000/aa')
@@ -45,6 +56,19 @@ test('responds to requests', async (t) => {
   t.false(error)
   t.equal(res.status, 200)
   t.deepEqual(data, {hello: 'world'})
+  try {
+    res = await fetch('http://127.0.0.1:5000/cookie', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', Cookie: 'hello=world; Max-Age=604800; HttpOnly'},
+      body: JSON.stringify({name: 'hello', value: 'world'})
+    })
+    data = res.headers.get('set-cookie')
+  } catch (e) {
+    error = e
+  }
+  t.false(error)
+  t.equal(res.status, 200)
+  t.equal(data, 'hello=world; Max-Age=604800; HttpOnly')
   // Shutdown App Server
   app.close()
 })
