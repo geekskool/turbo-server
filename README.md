@@ -1,7 +1,30 @@
-# turbo-server
+# Turbo Server
 A Web Server based on [turbo HTTP](https://www.npmjs.com/package/turbo-http)
 
-index.mjs
+## Installation
+
+```
+$ npm install turbo-serv --save
+```
+
+## Create an app
+
+```
+$ mkdir my-app && cd my-App
+$ npm init
+```
+
+Edit `start` in your `package.json`
+```
+{
+  "name": "my-app",
+  "scripts": {
+    "start": "node --experimental-modules index.mjs"
+  },
+}
+```
+
+Create `index.mjs` in `my-app` folder
 ```
 import App from 'turbo-serv'
 
@@ -15,37 +38,16 @@ router.get('/', function () {
 app.addRouter(router)
 app.listen(8080)
 ```
-`node --experimental-modules index.mjs`
 
-Installation
---
-turbo-serv is available in [npm registry](https://www.npmjs.com/package/turbo-serv) as a [Node.js](https://nodejs.org) module.
-
-To install run
-
-`npm init`
-
-`npm install turbo-serv --save`
-
-Import turbo-serv in project
---
-
-Add this line at the top of your file
-
-`import App from 'turbo-serv'`
-
-Initiating server
----
-`const app = new App()` // Initiate App instance
-
-`const router = new App.Router('/')` // Initiate Router 
-
-Add functions to routes
---
-
-Add functions for spesific route by using `router.get(path, callback)` or `router.post(path, callback)` for get and post requests respectively.
-
+run
 ```
-router.get('/my', myFunc) //myFunc will run when route <domain>/my is accessed.
+$ npm start
 ```
 
+## Static files
+Statics files are served from `public` folder by default. Just create a `public` folder
+in `my-app` and put your static files there.
+
+## Handlers
+All handlers are called with the Request object as `this`. Response object is
+`this.res` in the handler. To call the next handler call `this.next()`.
