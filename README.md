@@ -14,7 +14,9 @@ $ mkdir my-app && cd my-App
 $ npm init
 ```
 
-Edit `start` in your `package.json`
+Edit `start` in your `package.json`. Turbo server uses mjs modules. So works on
+the latest nodejs with experimental modules set.
+
 ```
 {
   "name": "my-app",
