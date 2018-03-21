@@ -28,7 +28,10 @@ app.listen() // process.env.PORT || 5000
 
 test('responds to requests', async (t) => {
   t.plan(15)
+
   let res, data, error
+
+  // Test Not Found for dummy route
   try {
     res = await fetch('http://127.0.0.1:5000/aa')
     data = await res.text()
@@ -38,6 +41,8 @@ test('responds to requests', async (t) => {
   t.false(error)
   t.equal(res.status, 404)
   t.equal(data, 'Not Found')
+
+  // Test GET '/'. Should return index.html in public folder
   try {
     res = await fetch('http://127.0.0.1:5000')
     data = await res.text()
@@ -47,6 +52,8 @@ test('responds to requests', async (t) => {
   t.false(error)
   t.equal(res.status, 200)
   t.equal(data, '<h1>hello world</h1>\n')
+
+  // Test POST '/' with {hello: 'world'}
   try {
     res = await fetch('http://127.0.0.1:5000', {
       method: 'POST',
@@ -60,6 +67,8 @@ test('responds to requests', async (t) => {
   t.false(error)
   t.equal(res.status, 200)
   t.deepEqual(data, {hello: 'world'})
+
+  // Test Cookie Parser
   try {
     res = await fetch('http://127.0.0.1:5000/cookie', {
       method: 'POST',
@@ -74,7 +83,7 @@ test('responds to requests', async (t) => {
   t.equal(res.status, 200)
   t.equal(data, 'hello=world; Max-Age=604800; HttpOnly')
 
-  /// My redirect test
+  // Test res.redirect
   try {
     res = await fetch('http://127.0.0.1:5000/redirect', {
       redirect: 'manual',
