@@ -55,7 +55,7 @@ All handlers are called with the Request object as `this`. Response object is
 `this.res` in the handler. To call the next handler call `this.next()`.
 
 ## Router 
-Router class whose constructor can be acccessed by `App.Router()` class provides routing functionalities.
+Router class whose constructor can be acccessed by `App.Router()` provides routing functionalities.
 
 To add specific function (`func`) to a route use `router.get(route, func)`(for GET requests) or `router.post(route, func)`(for POST requests) where `router` is an instance of `App.Router` route is the relative path.
 
