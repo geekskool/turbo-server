@@ -19,7 +19,7 @@ router.post('/cookie', function () {
 })
 
 router.get('/redirect', function () {
-  this.res.redirect('https://www.wikipedia.org/')
+  this.res.redirect('/wonderland')
 })
 
 app.addRouter(router)
@@ -76,16 +76,17 @@ test('responds to requests', async (t) => {
 
   /// My redirect test
   try {
-    res = await fetch('http://127.0.0.1:5000/redirect')
-    console.log(res.statusCode, '*********************', res.headers, res.status)
+    res = await fetch('http://127.0.0.1:5000/redirect', {
+      redirect: 'manual',
+      follow: 0
+    })
     data = res.headers.get('Location')
-    console.log(data)
   } catch (e) {
     error = e
   }
   t.false(error)
   t.equal(res.status, 302)
-  t.equal(data, 'https://www.wikipedia.org/')
+  t.equal(data, 'http://127.0.0.1:5000/wonderland')
 
   // Shutdown App Server
   app.close()
