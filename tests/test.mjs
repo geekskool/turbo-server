@@ -18,12 +18,16 @@ router.post('/cookie', function () {
   this.res.send(this.body)
 })
 
+router.get('/redirect', function () {
+  this.res.redirect('https://www.wikipedia.org/')
+})
+
 app.addRouter(router)
 
 app.listen() // process.env.PORT || 5000
 
 test('responds to requests', async (t) => {
-  t.plan(12)
+  t.plan(15)
   let res, data, error
   try {
     res = await fetch('http://127.0.0.1:5000/aa')
@@ -69,6 +73,20 @@ test('responds to requests', async (t) => {
   t.false(error)
   t.equal(res.status, 200)
   t.equal(data, 'hello=world; Max-Age=604800; HttpOnly')
+
+  /// My redirect test
+  try {
+    res = await fetch('http://127.0.0.1:5000/redirect')
+    console.log(res.statusCode, '*********************', res.headers, res.status)
+    data = res.headers.get('Location')
+    console.log(data)
+  } catch (e) {
+    error = e
+  }
+  t.false(error)
+  t.equal(res.status, 302)
+  t.equal(data, 'https://www.wikipedia.org/')
+
   // Shutdown App Server
   app.close()
 })
