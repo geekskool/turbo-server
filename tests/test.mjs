@@ -31,7 +31,6 @@ app.addRouter(router)
 app.listen() // process.env.PORT || 5000
 
 test('responds to requests', async (t) => {
-
   t.plan(18)
 
   let res, data, error
