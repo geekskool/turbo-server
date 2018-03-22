@@ -22,13 +22,18 @@ router.get('/redirect', function () {
   this.res.redirect('/wonderland')
 })
 
+router.post('/urlencoded', function () {
+  this.res.send(this.body)
+})
+
 app.addRouter(router)
 
 app.listen() // process.env.PORT || 5000
 
 test('responds to requests', async (t) => {
-  t.plan(15)
+  t.plan(18)
   let res, data, error
+
   try {
     res = await fetch('http://127.0.0.1:5000/aa')
     data = await res.text()
@@ -38,6 +43,7 @@ test('responds to requests', async (t) => {
   t.false(error)
   t.equal(res.status, 404)
   t.equal(data, 'Not Found')
+
   try {
     res = await fetch('http://127.0.0.1:5000')
     data = await res.text()
@@ -47,6 +53,7 @@ test('responds to requests', async (t) => {
   t.false(error)
   t.equal(res.status, 200)
   t.equal(data, '<h1>hello world</h1>\n')
+
   try {
     res = await fetch('http://127.0.0.1:5000', {
       method: 'POST',
@@ -60,6 +67,7 @@ test('responds to requests', async (t) => {
   t.false(error)
   t.equal(res.status, 200)
   t.deepEqual(data, {hello: 'world'})
+
   try {
     res = await fetch('http://127.0.0.1:5000/cookie', {
       method: 'POST',
@@ -87,6 +95,21 @@ test('responds to requests', async (t) => {
   t.false(error)
   t.equal(res.status, 302)
   t.equal(data, 'http://127.0.0.1:5000/wonderland')
+
+  // My urlencoded parser test
+  try {
+    res = await fetch('http://127.0.0.1:5000/urlencoded', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: 'input1=hello&input2=world&input3=are+you%3F'
+    })
+    data = await res.json()
+  } catch (e) {
+    error = e
+  }
+  t.false(error)
+  t.equal(res.status, 200)
+  t.deepEqual(data, {'input1': 'hello', 'input2': 'world', 'input3': 'are you?'})
 
   // Shutdown App Server
   app.close()
