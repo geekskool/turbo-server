@@ -10,12 +10,19 @@ router.post('/', function () {
   this.res.send(this.body)
 })
 
-router.post('/cookie', function () {
-  this.res.setCookie(this.body.name, this.body.value, {
-    httpOnly: true,
-    maxAge: 60 * 60 * 24 * 7 // 1 week
-  })
-  this.res.send(this.body)
+router.get('/new', function () {
+  this.session.set('key', 'value')
+  this.res.send('set')
+})
+
+router.get('/check', function () {
+  this.session.get('key')
+  this.res.send(this.session.get('key'))
+})
+
+router.get('/delete', function () {
+  this.session.delete('key')
+  this.res.send('delete')
 })
 
 app.addRouter(router)
@@ -23,8 +30,8 @@ app.addRouter(router)
 app.listen() // process.env.PORT || 5000
 
 test('responds to requests', async (t) => {
-  t.plan(12)
-  let res, data, error
+  t.plan(19)
+  let res, data, cookie, error
   try {
     res = await fetch('http://127.0.0.1:5000/aa')
     data = await res.text()
@@ -57,18 +64,50 @@ test('responds to requests', async (t) => {
   t.equal(res.status, 200)
   t.deepEqual(data, {hello: 'world'})
   try {
-    res = await fetch('http://127.0.0.1:5000/cookie', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json', Cookie: 'hello=world; Max-Age=604800; HttpOnly'},
-      body: JSON.stringify({name: 'hello', value: 'world'})
+    res = await fetch('http://127.0.0.1:5000/new', {
+      method: 'GET'
     })
-    data = res.headers.get('set-cookie')
+    cookie = res.headers.get('set-cookie')
   } catch (e) {
     error = e
   }
   t.false(error)
   t.equal(res.status, 200)
-  t.equal(data, 'hello=world; Max-Age=604800; HttpOnly')
+  try {
+    res = await fetch('http://127.0.0.1:5000/check', {
+      method: 'GET',
+      headers: {'Content-Type': 'application/json', Cookie: cookie}
+    })
+    data = await res.text()
+  } catch (e) {
+    error = e
+  }
+  t.false(error)
+  t.equal(res.status, 200)
+  t.equal(data, 'value')
+  try {
+    res = await fetch('http://127.0.0.1:5000/delete', {
+      method: 'GET',
+      headers: {'Content-Type': 'application/json', Cookie: cookie}
+    })
+  } catch (e) {
+    error = e
+  }
+  t.false(error)
+  t.equal(res.status, 200)
+  try {
+    res = await fetch('http://127.0.0.1:5000/check', {
+      method: 'GET',
+      headers: {'Content-Type': 'application/json', Cookie: cookie}
+    })
+    data = await res.text()
+  } catch (e) {
+    error = e
+  }
+  t.false(error)
+  t.equal(res.status, 200)
+  t.notEqual(data, 'value')
+
   // Shutdown App Server
   app.close()
 })

@@ -4,24 +4,22 @@ import App from '../lib/server'
 const app = new App()
 const router = new App.Router('/')
 
-const html = '<a href="/new">new</a><br><a href="/check">check</a><br><a href="/delete">delete</a>'
-
 router.get('/new', function () {
   console.log('app', this)
   this.session.set('yo', 'lo')
-  this.res.send(html)
+  this.res.send('set')
 })
 
 router.get('/check', function () {
   console.log('app', this)
   this.session.get('yo')
-  this.res.send(html)
+  this.res.send(this.session.get('yo'))
 })
 
 router.get('/delete', function () {
   console.log('app', this)
-  this.session.set('yo')
-  this.res.send(html)
+  this.session.delete('yo')
+  this.res.send(this.session.get('yo'))
 })
 
 app.addRouter(router)
