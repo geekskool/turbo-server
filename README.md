@@ -46,30 +46,42 @@ run
 $ npm start
 ```
 
+## App
+
+`const app = new App()` creates a new app.
+
+`app.listen(port)`. If `process.env.PORT` is set, that is taken as PORT. If not
+the `port` given to `app.listen` is taken. If both are not given, 5000 is taken as PORT.
+
 ## Static files
+
 Statics files are served from `public` folder by default. Just create a `public` folder
 in `my-app` and put your static files there.
 
+## Router
+
+Create a new router with `new App.Router()`.
+
+Set your routes with `router.get` and `router.post`
+
+Add router to App instance. `app.addRouter(router)`.
+
 ## Handlers
+
 All handlers are called with the Request object as `this`. Response object is
 `this.res` in the handler. To call the next handler call `this.next()`.
 
-## Router 
-Router class whose constructor can be acccessed by `App.Router()` provides routing functionalities.
+## Response Object
 
-To add specific function (`func`) to a route use `router.get(route, func)`(for GET requests) or `router.post(route, func)`(for POST requests) where `router` is an instance of `App.Router` route is the relative path.
+**send(data)** - If data is string or Buffer type, set the Content-Type before calling `send`. If type is Object data is sent as 'application/json'.
 
-After setting up the router add the `router` to the `app`(instance of `App`) by using `app.addRouter(router)` method.
+**sendFile(absPath)** - Given an absolute path, will send a file as response.
 
-## Redirect 
-Redirects to a `url` can be sent to the client by using `redirect(url)` method of responce.
+**redirect(url)** - Sends a 302 statusCode and redirects to given url
 
-```
-  this.res.redirect('http://www.example.com')
-```
-## Port
-The server by default uses the port `5000` to host the apps, however you can change the `port` either by explicitly declaring it in the app (`app.listen(port)`),
+## Todo
 
-Or by setting `PORT` up in your environment (execute `$ export PORT=port` in terminal before running the server)
-
-Setting in your environment will take precedence over setting in the app.
+1. Sessions
+3. Multi Part form data
+4. Nested Routers
+5. File downloads

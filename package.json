@@ -1,6 +1,6 @@
 {
   "name": "turbo-serv",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "description": "Web Server based on Turbo HTTP",
   "main": "lib/server.mjs",
   "scripts": {
@@ -27,6 +27,7 @@
     "cookie": "^0.3.1",
     "mime": "^2.2.0",
     "node-fetch": "^2.0.0",
+    "querystring": "^0.2.0",
     "turbo-http": "^0.3.0",
     "uid-safe": "^2.1.5"
   },
