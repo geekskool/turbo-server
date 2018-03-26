@@ -1,5 +1,5 @@
 const turbo = require('turbo-http')
-const fetch = require('node-fetch')
+const http = require('http')
 
 const REQUESTS = 64
 
@@ -16,11 +16,16 @@ const server = turbo.createServer(function (req, res) {
 const fireRequests = async () => {
   const promises = []
   for (let i = 0; i < REQUESTS; ++i) {
-    promises.push(fetch('http://127.0.0.1:5000'))
+    promises.push(new Promise((resolve, reject) => {
+      const req = http.get({ hostname: 'localhost', port: 8080, path: '/' }, (res) => {
+        res.resume()
+        resolve()
+      })
+      req.on('error', reject)
+    }))
   }
   try {
     await Promise.all(promises)
-    console.log('done')
   } catch (err) {
     console.warn(`Client Error:`, err)
   } finally {

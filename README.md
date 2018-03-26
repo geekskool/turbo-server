@@ -81,7 +81,6 @@ All handlers are called with the Request object as `this`. Response object is
 
 ## Todo
 
-1. Sessions
-3. Multi Part form data
+1. Multi Part form data
 4. Nested Routers
 5. File downloads
