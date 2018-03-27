@@ -16,12 +16,13 @@ router.get('/session', function () {
 })
 
 router.get('/sessioncheck', function () {
-  this.session.get('key')
-  this.res.send(this.session.get('key'))
+  let val = this.session.get('key')
+  if (val === undefined) val = 'undefined'
+  this.res.send(val)
 })
 
 router.get('/delete', function () {
-  this.session.delete('key')
+  this.session.delete()
   this.res.send('delete')
 })
 
@@ -103,9 +104,9 @@ test('responds to requests', async (t) => {
 
   try {
     res = await fetch('http://127.0.0.1:5000/delete', {
-      method: 'GET',
       headers: {'Content-Type': 'application/json', Cookie: cookie}
     })
+    cookie = res.headers.get('set-cookie')
   } catch (e) {
     error = e
   }
@@ -113,7 +114,9 @@ test('responds to requests', async (t) => {
   t.equal(res.status, 200)
 
   try {
-    res = await fetch('http://127.0.0.1:5000/sessioncheck')
+    res = await fetch('http://127.0.0.1:5000/sessioncheck', {
+      headers: {Cookie: cookie}
+    })
     data = await res.text()
   } catch (e) {
     error = e
