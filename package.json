@@ -25,6 +25,7 @@
   "homepage": "https://github.com/geekskool/turbo-server#readme",
   "dependencies": {
     "cookie": "^0.3.1",
+    "formidable": "^1.2.1",
     "mime": "^2.2.0",
     "node-fetch": "^2.0.0",
     "querystring": "^0.2.0",
@@ -32,6 +33,7 @@
     "uid-safe": "^2.1.5"
   },
   "devDependencies": {
+    "form-data": "^2.3.2",
     "tape": "^4.9.0"
   }
 }

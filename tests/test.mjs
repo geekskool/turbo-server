@@ -1,6 +1,7 @@
 import fetch from 'node-fetch'
 import test from 'tape'
 import App from '../lib/server'
+import FormData from 'form-data'
 
 // Start App Server
 const app = new App()
@@ -31,6 +32,10 @@ router.get('/redirect', function () {
 })
 
 router.post('/urlencoded', function () {
+  this.res.send(this.body)
+})
+
+router.post('/multipartform', function () {
   this.res.send(this.body)
 })
 
@@ -151,6 +156,24 @@ test('responds to requests', async (t) => {
     error = e
   }
   t.deepEqual(data, {'input1': 'hello', 'input2': 'world', 'input3': 'are you?'})
+
+  // Test multipart form-data
+  try {
+    let form = new FormData()
+    form.append('input1', 'hello')
+    form.append('input2', 'world')
+    form.append('input3', 'are you?')
+    res = await fetch('http://127.0.0.1:5000/multipartform', {
+      method: 'POST',
+      body: form
+    })
+    data = await res.json()
+  } catch (e) {
+    error = e
+  }
+  t.false(error)
+  t.equal(res.status, 200)
+  t.deepEqual(data.fields, {'input1': 'hello', 'input2': 'world', 'input3': 'are you?'})
 
   // Shutdown App Server
   app.close()
