@@ -48,9 +48,10 @@ $ npm start
 
 ## App
 
-`new App()` creates a new app.
+`const app = new App()` creates a new app.
+
 `app.listen(port)`. If `process.env.PORT` is set, that is taken as PORT. If not
-the `port` given to `app.listen` is taken. If both are not given 5000 is taken as PORT.
+the `port` given to `app.listen` is taken. If both are not given, 5000 is taken as PORT.
 
 ## Static files
 
@@ -71,17 +72,15 @@ All handlers are called with the Request object as `this`. Response object is
 `this.res` in the handler. To call the next handler call `this.next()`.
 
 ## Response Object
-Following methods are added to the Response Object.
 
-send(data) - If data is string or Buffer type, data is sent as Buffer. If type is Object
-data is sent as 'application/json'.
+**send(data)** - If data is string or Buffer type, set the Content-Type before calling `send`. If type is Object data is sent as 'application/json'.
 
-redirect(url) - Sends a 302 statusCode and redirects to given url
+**sendFile(absPath)** - Given an absolute path, will send a file as response.
+
+**redirect(url)** - Sends a 302 statusCode and redirects to given url
 
 ## Todo
 
-1. Sessions
-2. Url encoded form data
-3. Multi Part form data
+1. Multi Part form data
 4. Nested Routers
 5. File downloads
