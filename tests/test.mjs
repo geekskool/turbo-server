@@ -44,7 +44,7 @@ app.addRouter(router)
 app.listen() // process.env.PORT || 5000
 
 test('responds to requests', async (t) => {
-  t.plan(23)
+  t.plan(26)
   let res, data, cookie, error
   try {
     res = await fetch('http://127.0.0.1:5000/aa')
