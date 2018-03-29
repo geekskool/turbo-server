@@ -39,12 +39,16 @@ router.post('/multipartform', function () {
   this.res.send(this.body)
 })
 
+router.get('/cors', function () {
+  this.res.send('cors')
+})
+
 app.addRouter(router)
 
 app.listen() // process.env.PORT || 5000
 
 test('responds to requests', async (t) => {
-  t.plan(26)
+  t.plan(32)
   let res, data, cookie, error
   try {
     res = await fetch('http://127.0.0.1:5000/aa')
@@ -174,6 +178,34 @@ test('responds to requests', async (t) => {
   t.false(error)
   t.equal(res.status, 200)
   t.deepEqual(data.fields, {'input1': 'hello', 'input2': 'world', 'input3': 'are you?'})
+
+  // Test cors
+
+  try {
+    res = await fetch('http://127.0.0.1:5000/cors', {
+      method: 'GET',
+      headers: {'origin': 'http://localhost:5000'}
+    })
+    data = await res.text()
+  } catch (e) {
+    error = e
+  }
+  t.false(error)
+  t.equal(res.status, 200)
+  t.equal(data, 'cors')
+
+  try {
+    res = await fetch('http://127.0.0.1:5000/cors', {
+      method: 'GET',
+      headers: {'origin': 'http://www.example.com'}
+    })
+    data = await res.text()
+  } catch (e) {
+    error = e
+  }
+  t.false(error)
+  t.equal(res.status, 200)
+  t.notEqual(data, 'cors')
 
   // Shutdown App Server
   app.close()
