@@ -11,6 +11,12 @@ router.post('/', function () {
   this.res.send(this.body)
 })
 
+router.get('/Cookie', function () {
+  console.log(this.cookies)
+  this.res.setCookie('hello', 'world')
+  this.res.send('hello=world')
+})
+
 router.get('/session', function () {
   this.session.set('key', 'value')
   this.res.send('set')
@@ -44,8 +50,23 @@ app.addRouter(router)
 app.listen() // process.env.PORT || 5000
 
 test('responds to requests', async (t) => {
-  t.plan(26)
+  t.plan(3)
   let res, data, cookie, error
+
+  try {
+    res = await fetch('http://127.0.0.1:5000/cookie')
+    data = await res.json()
+    cookie = res.headers.get('set-cookie')
+    const [name, value] = cookie.split(';')[0].split('=')
+    cookie = {[name]: value}
+  } catch (e) {
+    error = e
+  }
+  t.false(error)
+  t.equal(res.status, 200)
+  t.deepEqual(data, cookie)
+
+/*
   try {
     res = await fetch('http://127.0.0.1:5000/aa')
     data = await res.text()
@@ -174,7 +195,7 @@ test('responds to requests', async (t) => {
   t.false(error)
   t.equal(res.status, 200)
   t.deepEqual(data.fields, {'input1': 'hello', 'input2': 'world', 'input3': 'are you?'})
-
+*/
   // Shutdown App Server
   app.close()
 })
