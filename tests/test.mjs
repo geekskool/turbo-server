@@ -70,7 +70,7 @@ test('responds to requests', async (t) => {
   }
   t.false(error)
   t.equal(res.status, 200)
-  t.equal(data, '<h1>hello world</h1>\n')
+  t.equal(data, '<h1>hello world</h1>')
 
   // Test POST '/' with {hello: 'world'}
 
@@ -188,8 +188,7 @@ test('responds to requests', async (t) => {
     })
     data = await res.text()
     headers = {
-      'Access-Control-Allow-Origin': res.headers.get('Access-Control-Allow-Origin'),
-      'Access-Control-Allow-Methods': res.headers.get('Access-Control-Allow-Methods')
+      'Access-Control-Allow-Origin': res.headers.get('Access-Control-Allow-Origin')
     }
   } catch (e) {
     error = e
@@ -198,8 +197,7 @@ test('responds to requests', async (t) => {
   t.equal(res.status, 200)
   t.equal(data, 'cors')
   t.deepEqual(headers, {
-    'Access-Control-Allow-Origin': 'http://localhost:5000',
-    'Access-Control-Allow-Methods': 'GET'
+    'Access-Control-Allow-Origin': 'http://localhost:5000'
   })
 
   try {
