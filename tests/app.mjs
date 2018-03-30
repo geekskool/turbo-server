@@ -4,10 +4,8 @@ import App from '../lib/server'
 const app = new App()
 const router = new App.Router('/')
 
-router.get('/page', function () {
-  this.res.send(String(this.session.get('visited')))
-  this.session.set('visited', (this.session.get('visited') || 0) + 1)
-  console.log(this)
+router.get('/cors', function () {
+  this.res.send('cors')
 })
 
 app.addRouter(router)
