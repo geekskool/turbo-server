@@ -5,7 +5,7 @@ import FormData from 'form-data'
 
 // Start App Server
 const app = new App()
-const router = new App.Router('/')
+const router = app.getRouter()
 
 router.post('/', function () {
   this.res.send(this.body)
@@ -26,8 +26,6 @@ router.post('/urlencoded', function () {
 router.post('/multipartform', function () {
   this.res.send(this.body)
 })
-
-app.addRouter(router)
 
 app.listen() // process.env.PORT || 5000
 

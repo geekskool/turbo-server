@@ -1,6 +1,6 @@
 {
   "name": "turbo-serv",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Web Server based on Turbo HTTP",
   "main": "lib/server.mjs",
   "scripts": {
