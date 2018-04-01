@@ -5,26 +5,14 @@ import FormData from 'form-data'
 
 // Start App Server
 const app = new App()
-const router = new App.Router('/')
+const router = app.getRouter()
 
 router.post('/', function () {
   this.res.send(this.body)
 })
 
 router.get('/session', function () {
-  this.session.set('key', 'value')
-  this.res.send('set')
-})
-
-router.get('/sessioncheck', function () {
-  let val = this.session.get('key')
-  if (val === undefined) val = 'undefined'
-  this.res.send(val)
-})
-
-router.get('/delete', function () {
-  this.session.delete()
-  this.res.send('delete')
+  this.res.send({sess_id: this.session.sess_id})
 })
 
 router.get('/redirect', function () {
@@ -43,13 +31,12 @@ router.get('/cors', function () {
   this.res.send('cors')
 })
 
-app.addRouter(router)
-
 app.listen() // process.env.PORT || 5000
 
 test('responds to requests', async (t) => {
-  t.plan(37)
+  t.plan(32)
   let res, data, cookie, error, headers
+
   try {
     res = await fetch('http://127.0.0.1:5000/aa')
     data = await res.text()
@@ -88,53 +75,23 @@ test('responds to requests', async (t) => {
   t.equal(res.status, 200)
   t.deepEqual(data, {hello: 'world'})
 
-  // Test Sessions
+  // Test Session
 
   try {
     res = await fetch('http://127.0.0.1:5000/session')
+    data = await res.json()
     cookie = res.headers.get('set-cookie')
+    const [name, value] = cookie.split(';')[0].split('=')
+    cookie = {[name]: value}
   } catch (e) {
     error = e
   }
   t.false(error)
   t.equal(res.status, 200)
-
-  try {
-    res = await fetch('http://127.0.0.1:5000/sessioncheck', {
-      headers: {Cookie: cookie}
-    })
-    data = await res.text()
-  } catch (e) {
-    error = e
-  }
-  t.false(error)
-  t.equal(res.status, 200)
-  t.equal(data, 'value')
-
-  try {
-    res = await fetch('http://127.0.0.1:5000/delete', {
-      headers: {'Content-Type': 'application/json', Cookie: cookie}
-    })
-    cookie = res.headers.get('set-cookie')
-  } catch (e) {
-    error = e
-  }
-  t.false(error)
-  t.equal(res.status, 200)
-
-  try {
-    res = await fetch('http://127.0.0.1:5000/sessioncheck', {
-      headers: {Cookie: cookie}
-    })
-    data = await res.text()
-  } catch (e) {
-    error = e
-  }
-  t.false(error)
-  t.equal(res.status, 200)
-  t.notEqual(data, 'value')
+  t.deepEqual(data, cookie)
 
   // Test res.redirect
+
   try {
     res = await fetch('http://127.0.0.1:5000/redirect', {
       redirect: 'manual',
@@ -149,6 +106,7 @@ test('responds to requests', async (t) => {
   t.equal(data, 'http://127.0.0.1:5000/wonderland')
 
   // Test urlencoded
+
   try {
     res = await fetch('http://127.0.0.1:5000/urlencoded', {
       method: 'POST',
@@ -159,9 +117,12 @@ test('responds to requests', async (t) => {
   } catch (e) {
     error = e
   }
+  t.false(error)
+  t.equal(res.status, 200)
   t.deepEqual(data, {'input1': 'hello', 'input2': 'world', 'input3': 'are you?'})
 
   // Test multipart form-data
+
   try {
     let form = new FormData()
     form.append('input1', 'hello')
