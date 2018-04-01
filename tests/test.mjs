@@ -48,7 +48,7 @@ app.addRouter(router)
 app.listen() // process.env.PORT || 5000
 
 test('responds to requests', async (t) => {
-  t.plan(33)
+  t.plan(37)
   let res, data, cookie, error, headers
   try {
     res = await fetch('http://127.0.0.1:5000/aa')
@@ -212,6 +212,30 @@ test('responds to requests', async (t) => {
   t.false(error)
   t.equal(res.status, 200)
   t.notEqual(data, 'cors')
+
+  // cors preflight
+  try {
+    res = await fetch('http://127.0.0.1:5000/cors', {
+      method: 'OPTIONS',
+      headers: {'origin': 'http://localhost:5000',
+        'Access-Control-Request-Method': 'GET'
+      }
+    })
+    data = await res.text()
+    headers = {
+      'Access-Control-Allow-Origin': res.headers.get('Access-Control-Allow-Origin'),
+      'Access-Control-Allow-Methods': res.headers.get('Access-Control-Allow-Methods')
+    }
+  } catch (e) {
+    error = e
+  }
+  t.false(error)
+  t.equal(res.status, 200)
+  t.notEqual(data, 'cors')
+  t.deepEqual(headers, {
+    'Access-Control-Allow-Origin': 'http://localhost:5000',
+    'Access-Control-Allow-Methods': 'GET'
+  })
 
   // Shutdown App Server
   app.close()
