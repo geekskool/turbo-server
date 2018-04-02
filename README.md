@@ -1,6 +1,7 @@
 # Turbo Server
 A Web Server based on [turbo HTTP](https://www.npmjs.com/package/turbo-http)
 
+
 ## Installation
 
 ```
@@ -31,13 +32,12 @@ Create `index.mjs` in `my-app` folder
 import App from 'turbo-serv'
 
 const app = new App()
-const router = new App.Router('/')
+const router = app.getRouter()
 
 router.get('/', function () {
   this.res.send('Hello World')
 })
 
-app.addRouter(router)
 app.listen(8080)
 ```
 
@@ -60,16 +60,19 @@ in `my-app` and put your static files there.
 
 ## Router
 
-Create a new router with `new App.Router()`.
+Get the router with `app.getRouter()`.
 
 Set your routes with `router.get` and `router.post`
-
-Add router to App instance. `app.addRouter(router)`.
 
 ## Handlers
 
 All handlers are called with the Request object as `this`. Response object is
-`this.res` in the handler. To call the next handler call `this.next()`.
+`this.res`.
+
+If the handler returns a value other than `undefined` the next handler is called
+with the value. If the handler is done, don't `return` anything.
+
+Handlers can be both asynchronous or synchronous.
 
 ## Response Object
 
@@ -81,6 +84,5 @@ All handlers are called with the Request object as `this`. Response object is
 
 ## Todo
 
-1. Multi Part form data
-4. Nested Routers
+1. Nested Routers
 5. File downloads
