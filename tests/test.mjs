@@ -27,11 +27,15 @@ router.post('/multipartform', function () {
   this.res.send(this.body)
 })
 
+router.get('/cors', function () {
+  this.res.send('cors')
+})
+
 app.listen() // process.env.PORT || 5000
 
 test('responds to requests', async (t) => {
-  t.plan(21)
-  let res, data, cookie, error
+  t.plan(32)
+  let res, data, cookie, error, headers
 
   try {
     res = await fetch('http://127.0.0.1:5000/aa')
@@ -53,7 +57,7 @@ test('responds to requests', async (t) => {
   }
   t.false(error)
   t.equal(res.status, 200)
-  t.equal(data, '<h1>hello world</h1>\n')
+  t.equal(data, '<h1>hello world</h1>')
 
   // Test POST '/' with {hello: 'world'}
 
@@ -135,6 +139,64 @@ test('responds to requests', async (t) => {
   t.false(error)
   t.equal(res.status, 200)
   t.deepEqual(data.fields, {'input1': 'hello', 'input2': 'world', 'input3': 'are you?'})
+
+  // Test cors
+
+  try {
+    res = await fetch('http://127.0.0.1:5000/cors', {
+      method: 'GET',
+      headers: {'origin': 'http://localhost:5000'}
+    })
+    data = await res.text()
+    headers = {
+      'Access-Control-Allow-Origin': res.headers.get('Access-Control-Allow-Origin')
+    }
+  } catch (e) {
+    error = e
+  }
+  t.false(error)
+  t.equal(res.status, 200)
+  t.equal(data, 'cors')
+  t.deepEqual(headers, {
+    'Access-Control-Allow-Origin': 'http://localhost:5000'
+  })
+
+  try {
+    res = await fetch('http://127.0.0.1:5000/cors', {
+      method: 'GET',
+      headers: {'origin': 'http://www.example.com'}
+    })
+    data = await res.text()
+  } catch (e) {
+    error = e
+  }
+  t.false(error)
+  t.equal(res.status, 200)
+  t.notEqual(data, 'cors')
+
+  // cors preflight
+  try {
+    res = await fetch('http://127.0.0.1:5000/cors', {
+      method: 'OPTIONS',
+      headers: {'origin': 'http://localhost:5000',
+        'Access-Control-Request-Method': 'GET'
+      }
+    })
+    data = await res.text()
+    headers = {
+      'Access-Control-Allow-Origin': res.headers.get('Access-Control-Allow-Origin'),
+      'Access-Control-Allow-Methods': res.headers.get('Access-Control-Allow-Methods')
+    }
+  } catch (e) {
+    error = e
+  }
+  t.false(error)
+  t.equal(res.status, 200)
+  t.notEqual(data, 'cors')
+  t.deepEqual(headers, {
+    'Access-Control-Allow-Origin': 'http://localhost:5000',
+    'Access-Control-Allow-Methods': 'GET'
+  })
 
   // Shutdown App Server
   app.close()
