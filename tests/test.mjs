@@ -2,6 +2,7 @@ import fetch from 'node-fetch'
 import test from 'tape'
 import App from '../lib/server'
 import FormData from 'form-data'
+import signature from 'cookie-signature'
 
 // Start App Server
 const app = new App()
@@ -84,7 +85,8 @@ test('responds to requests', async (t) => {
     data = await res.json()
     cookie = res.headers.get('set-cookie')
     const [name, value] = cookie.split(';')[0].split('=')
-    cookie = {[name]: value}
+    const val = signature.unsign(value, 'session')
+    cookie = {[name]: val}
   } catch (e) {
     error = e
   }
