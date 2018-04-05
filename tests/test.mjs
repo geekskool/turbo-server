@@ -27,10 +27,16 @@ router.post('/multipartform', function () {
   this.res.send(this.body)
 })
 
+router.get('/download', function () {
+  const file = './public/index.html'
+  const filename = 'app.html'
+  this.res.download(file, filename)
+})
+
 app.listen() // process.env.PORT || 5000
 
 test('responds to requests', async (t) => {
-  t.plan(21)
+  t.plan(24)
   let res, data, cookie, error
 
   try {
@@ -135,6 +141,18 @@ test('responds to requests', async (t) => {
   t.false(error)
   t.equal(res.status, 200)
   t.deepEqual(data.fields, {'input1': 'hello', 'input2': 'world', 'input3': 'are you?'})
+
+  // Test res.download
+
+  try {
+    res = await fetch('http://127.0.0.1:5000/download')
+    data = res.headers.get('Content-Disposition')
+  } catch (e) {
+    error = e
+  }
+  t.false(error)
+  t.equal(res.status, 200)
+  t.equal(data, 'attachment;filename="app.html"')
 
   // Shutdown App Server
   app.close()
