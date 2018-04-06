@@ -85,7 +85,7 @@ test('responds to requests', async (t) => {
     data = await res.json()
     cookie = res.headers.get('set-cookie')
     const [name, value] = cookie.split(';')[0].split('=')
-    const val = signature.unsign(value, 'session')
+    const val = signature.unsign(decodeURIComponent(value), 'session')
     cookie = {[name]: val}
   } catch (e) {
     error = e
