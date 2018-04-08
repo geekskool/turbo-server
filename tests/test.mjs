@@ -11,19 +11,21 @@ router.post('/', function () {
   this.res.send(this.body)
 })
 
-router.get('/session', function () {
-  this.session.set('key', 'value2')
-  this.res.send('set')
+router.get('/session', async function () {
+  let result = this.session.set('key', 'value')
+  if (result instanceof Promise) {
+    await result
+  }
+  this.res.send({sess_id: this.session.sess_id})
 })
 
-router.get('/sessioncheck', function () {
+router.get('/sessioncheck', async function () {
   let val = this.session.get('key')
-  val.then((r) => {
-    console.log('in promise ', r)
-    this.res.send(r)
-  })
-  // if (val === undefined) val = 'undefined'
-  // this.res.send(val)
+  if (val instanceof Promise) {
+    val = await val
+  }
+  if (val === undefined) val = 'undefined'
+  this.res.send(val['key'])
 })
 
 router.get('/delete', function () {
