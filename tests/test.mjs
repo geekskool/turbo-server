@@ -12,8 +12,26 @@ router.post('/', function () {
   this.res.send(this.body)
 })
 
-router.get('/session', function () {
+router.get('/session', async function () {
+  let result = this.session.set('key', 'value')
+  if (result instanceof Promise) {
+    await result
+  }
   this.res.send({sess_id: this.session.sess_id})
+})
+
+router.get('/sessioncheck', async function () {
+  let val = this.session.get('key')
+  if (val instanceof Promise) {
+    val = await val
+  }
+  if (val === undefined) val = 'undefined'
+  this.res.send(val['key'])
+})
+
+router.get('/delete', function () {
+  this.session.delete()
+  this.res.send('delete')
 })
 
 router.get('/redirect', function () {
