@@ -1,6 +1,10 @@
 # Turbo Server
+
 A Web Server based on [turbo HTTP](https://www.npmjs.com/package/turbo-http)
 
+* Twice as fast as other node frameworks based on http module.
+* Batteries included. Static files, sessions, router, body parser, cors by default.
+* Configure via config file.
 
 ## Installation
 
@@ -85,4 +89,3 @@ Handlers can be both asynchronous or synchronous.
 ## Todo
 
 1. Nested Routers
-5. File downloads

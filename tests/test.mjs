@@ -2,6 +2,7 @@ import fetch from 'node-fetch'
 import test from 'tape'
 import App from '../lib/server'
 import FormData from 'form-data'
+import signature from 'cookie-signature'
 
 // Start App Server
 const app = new App()
@@ -12,7 +13,9 @@ router.post('/', function () {
 })
 
 router.get('/session', function () {
-  this.res.send({sess_id: this.session.sess_id})
+  this.res.send({
+    sess_id: this.session.sess_id
+  })
 })
 
 router.get('/redirect', function () {
@@ -31,10 +34,16 @@ router.get('/cors', function () {
   this.res.send('cors')
 })
 
+router.get('/download', function () {
+  const file = './public/index.html'
+  const filename = 'app.html'
+  this.res.download(file, filename)
+})
+
 app.listen() // process.env.PORT || 5000
 
 test('responds to requests', async (t) => {
-  t.plan(32)
+  t.plan(35)
   let res, data, cookie, error, headers
 
   try {
@@ -57,15 +66,19 @@ test('responds to requests', async (t) => {
   }
   t.false(error)
   t.equal(res.status, 200)
-  t.equal(data, '<h1>hello world</h1>\n')
+  t.equal(data, '<h1>hello world</h1>')
 
   // Test POST '/' with {hello: 'world'}
 
   try {
     res = await fetch('http://127.0.0.1:5000', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({hello: 'world'})
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        hello: 'world'
+      })
     })
     data = await res.json()
   } catch (e) {
@@ -73,7 +86,9 @@ test('responds to requests', async (t) => {
   }
   t.false(error)
   t.equal(res.status, 200)
-  t.deepEqual(data, {hello: 'world'})
+  t.deepEqual(data, {
+    hello: 'world'
+  })
 
   // Test Session
 
@@ -82,7 +97,10 @@ test('responds to requests', async (t) => {
     data = await res.json()
     cookie = res.headers.get('set-cookie')
     const [name, value] = cookie.split(';')[0].split('=')
-    cookie = {[name]: value}
+    const val = signature.unsign(decodeURIComponent(value), 'session')
+    cookie = {
+      [name]: val
+    }
   } catch (e) {
     error = e
   }
@@ -110,7 +128,9 @@ test('responds to requests', async (t) => {
   try {
     res = await fetch('http://127.0.0.1:5000/urlencoded', {
       method: 'POST',
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
       body: 'input1=hello&input2=world&input3=are+you%3F'
     })
     data = await res.json()
@@ -119,7 +139,11 @@ test('responds to requests', async (t) => {
   }
   t.false(error)
   t.equal(res.status, 200)
-  t.deepEqual(data, {'input1': 'hello', 'input2': 'world', 'input3': 'are you?'})
+  t.deepEqual(data, {
+    'input1': 'hello',
+    'input2': 'world',
+    'input3': 'are you?'
+  })
 
   // Test multipart form-data
 
@@ -138,7 +162,23 @@ test('responds to requests', async (t) => {
   }
   t.false(error)
   t.equal(res.status, 200)
-  t.deepEqual(data.fields, {'input1': 'hello', 'input2': 'world', 'input3': 'are you?'})
+  t.deepEqual(data.fields, {
+    'input1': 'hello',
+    'input2': 'world',
+    'input3': 'are you?'
+  })
+
+  // Test res.download
+
+  try {
+    res = await fetch('http://127.0.0.1:5000/download')
+    data = res.headers.get('Content-Disposition')
+  } catch (e) {
+    error = e
+  }
+  t.false(error)
+  t.equal(res.status, 200)
+  t.equal(data, 'attachment;filename="app.html"')
 
   // Test cors
 
