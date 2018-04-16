@@ -28,6 +28,7 @@
     "cookie-signature": "^1.1.0",
     "formidable": "^1.2.1",
     "mime": "^2.2.0",
+    "mongodb": "^3.0.6",
     "node-fetch": "^2.0.0",
     "querystring": "^0.2.0",
     "redis": "^2.8.0",
