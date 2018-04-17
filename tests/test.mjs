@@ -13,31 +13,7 @@ router.post('/', function () {
 })
 
 router.get('/session', function () {
-  this.res.send({ sess_id: this.session.sess_id })
-})
-
-router.get('/sessionset', async function () {
-  let result = this.session.set('key', 'value')
-  if (result instanceof Promise) {
-    await result
-  }
-  this.res.send('set')
-})
-
-router.get('/sessioncheck', async function () {
-  let val = this.session.get('key')
-  if (val instanceof Promise) {
-    val = await val
-  }
-  if (!val)
-    this.res.send(val)
-  else
-    this.res.send(val['key'])
-})
-
-router.get('/delete', function () {
-  this.session.delete()
-  this.res.send('delete')
+  this.res.send({sess_id: this.session.sess_id})
 })
 
 router.get('/redirect', function () {
@@ -91,8 +67,8 @@ test('responds to requests', async (t) => {
   try {
     res = await fetch('http://127.0.0.1:5000', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ hello: 'world' })
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({hello: 'world'})
     })
     data = await res.json()
   } catch (e) {
@@ -100,18 +76,17 @@ test('responds to requests', async (t) => {
   }
   t.false(error)
   t.equal(res.status, 200)
-  t.deepEqual(data, { hello: 'world' })
+  t.deepEqual(data, {hello: 'world'})
 
   // Test Session
 
   try {
-    console.log('session test')
     res = await fetch('http://127.0.0.1:5000/session')
     data = await res.json()
     cookie = res.headers.get('set-cookie')
     const [name, value] = cookie.split(';')[0].split('=')
     const val = signature.unsign(decodeURIComponent(value), 'session')
-    cookie = { [name]: val }
+    cookie = {[name]: val}
   } catch (e) {
     error = e
   }
@@ -139,7 +114,7 @@ test('responds to requests', async (t) => {
   try {
     res = await fetch('http://127.0.0.1:5000/urlencoded', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: 'input1=hello&input2=world&input3=are+you%3F'
     })
     data = await res.json()
@@ -148,7 +123,7 @@ test('responds to requests', async (t) => {
   }
   t.false(error)
   t.equal(res.status, 200)
-  t.deepEqual(data, { 'input1': 'hello', 'input2': 'world', 'input3': 'are you?' })
+  t.deepEqual(data, {'input1': 'hello', 'input2': 'world', 'input3': 'are you?'})
 
   // Test multipart form-data
 
@@ -167,7 +142,7 @@ test('responds to requests', async (t) => {
   }
   t.false(error)
   t.equal(res.status, 200)
-  t.deepEqual(data.fields, { 'input1': 'hello', 'input2': 'world', 'input3': 'are you?' })
+  t.deepEqual(data.fields, {'input1': 'hello', 'input2': 'world', 'input3': 'are you?'})
 
   // Test res.download
 
