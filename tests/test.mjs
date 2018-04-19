@@ -37,6 +37,14 @@ router.get('/user', function() {
   this.res.send(`Hi User!. Your id is ${this.param}`)
 })
 
+router.get('/user/edit', function() {
+  this.res.send(`Your id is ${this.param}. This is an edit route.`)
+})
+
+router.get('/user/delete', function() {
+  this.res.send(`Your id is ${this.param}. Delete user logic goes here.`)
+})
+
 app.listen() // process.env.PORT || 5000
 
 // test('responds to requests', async t => {
