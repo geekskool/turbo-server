@@ -34,21 +34,23 @@ router.get('/download', function() {
 })
 
 router.get('/user', function() {
-  this.res.send(`Hi User!. Your id is ${this.param}`)
+  this.res.send({ user: `Hi User!. Your id is ${this.param}` })
 })
 
 router.get('/user/edit', function() {
-  this.res.send(`Your id is ${this.param}. This is an edit route.`)
+  this.res.send({ user: `Your id is ${this.param}. This is an edit route.` })
 })
 
 router.get('/user/delete', function() {
-  this.res.send(`Your id is ${this.param}. Delete user logic goes here.`)
+  this.res.send({
+    user: `Your id is ${this.param}. Delete user logic goes here.`
+  })
 })
 
 app.listen() // process.env.PORT || 5000
 
 test('responds to requests', async t => {
-  t.plan(24)
+  t.plan(33)
   let res, data, cookie, error
 
   try {
@@ -171,6 +173,49 @@ test('responds to requests', async t => {
   t.equal(res.status, 200)
   t.equal(data, 'attachment;filename="app.html"')
 
+  // Test user with param
+
+  try {
+    res = await fetch('http://127.0.0.1:5000/user/507f160ea', {
+      method: 'GET'
+    })
+    data = await res.json()
+  } catch (e) {
+    error = e
+  }
+  t.false(error)
+  t.equal(res.status, 200)
+  t.deepEqual(data, { user: 'Hi User!. Your id is 507f160ea' })
+
+  // Test user with param and edit route.
+
+  try {
+    res = await fetch('http://127.0.0.1:5000/user/507f160ea/edit', {
+      method: 'GET'
+    })
+    data = await res.json()
+  } catch (e) {
+    error = e
+  }
+  t.false(error)
+  t.equal(res.status, 200)
+  t.deepEqual(data, { user: 'Your id is 507f160ea. This is an edit route.' })
+
+  // Test user with param and delete route.
+
+  try {
+    res = await fetch('http://127.0.0.1:5000/user/507f160ea/delete', {
+      method: 'GET'
+    })
+    data = await res.json()
+  } catch (e) {
+    error = e
+  }
+  t.false(error)
+  t.equal(res.status, 200)
+  t.deepEqual(data, {
+    user: 'Your id is 507f160ea. Delete user logic goes here.'
+  })
   // Shutdown App Server
   app.close()
 })
