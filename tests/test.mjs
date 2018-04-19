@@ -33,8 +33,8 @@ router.get('/download', function() {
   this.res.download(file, filename)
 })
 
-router.get('/user/:id', function() {
-  this.res.send('Hi')
+router.get('/user', function() {
+  this.res.send(`Hi User!. Your id is ${this.param}`)
 })
 
 app.listen() // process.env.PORT || 5000
@@ -80,22 +80,6 @@ app.listen() // process.env.PORT || 5000
 //   t.false(error)
 //   t.equal(res.status, 200)
 //   t.deepEqual(data, { hello: 'world' })
-
-//   // Test GET '/users/:id'
-
-//   try {
-//     res = await fetch('http://127.0.0.1:5000/users/101', {
-//       method: 'GET',
-//       headers: { 'Content-Type': 'application/json' },
-//       body: JSON.stringify({})
-//     })
-//     data = await res.json()
-//   } catch (e) {
-//     error = e
-//   }
-//   t.false(error)
-//   t.equal(res.status, 200)
-//   t.deepEqual(data, { name: 'Batman', id: '101' })
 
 //   // Test Session
 
