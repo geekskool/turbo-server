@@ -3,16 +3,15 @@ import test from 'tape'
 import App from '../lib/server'
 import FormData from 'form-data'
 import signature from 'cookie-signature'
-import Router from './../lib/router'
 // Start App Server
 const app = new App()
-const router = app.getRouter()
+// const router = app.getRouter()
 
-const settingsRouter = app.getRouter('/settings')
+const settingsRouter = new (App.Routers())('/settings')
 
-router.post('/', function() {
-  this.res.send(this.body)
-})
+// router.post('/', function() {
+//   this.res.send(this.body)
+// })
 settingsRouter.get('/create', function() {
   this.res.send('settings/create route')
 })
