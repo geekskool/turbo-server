@@ -6,9 +6,10 @@ import signature from 'cookie-signature'
 // Start App Server
 const app = new App()
 const router = app.getRouter()
-const settingsRouter = app.getRouter('/settings')
+// const settingsRouter = app.getRouter('/settings')
 
 // const settingsRouter = new (App.Routers())('/settings')
+const settingsRouter = new App.Router('/settings')
 
 router.post('/', function() {
   this.res.send(this.body)
