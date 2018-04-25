@@ -6,10 +6,12 @@ import signature from 'cookie-signature'
 // Start App Server
 const app = new App()
 const router = app.getRouter()
-// const settingsRouter = app.getRouter('/settings')
 
-// const settingsRouter = new (App.Routers())('/settings')
 const settingsRouter = new App.Router('/settings')
+const adminRouter = new App.Router('/admin')
+
+router.addRouter(settingsRouter)
+router.addRouter(adminRouter)
 
 router.post('/', function() {
   this.res.send(this.body)
@@ -19,9 +21,29 @@ router.get('/session', function() {
   this.res.send({ sess_id: this.session.sess_id })
 })
 
+settingsRouter.get('/', function() {
+  this.res.send(`From settings router root path`)
+})
+
 settingsRouter.get('/create', function() {
   this.res.send('settings/create route')
 })
+
+settingsRouter.post('/config', function() {
+  this.res.send('settings/config route')
+})
+
+adminRouter.post('/createUser', function() {
+  this.res.send('admin/createUser route')
+})
+
+const layoutRouter = new App.Router('/layout')
+
+layoutRouter.post('/modify', function() {
+  this.res.send('settings/create route')
+})
+
+settingsRouter.addRouter(layoutRouter)
 
 // router.get('/session', function() {
 //   this.res.send({ sess_id: this.session.sess_id })
