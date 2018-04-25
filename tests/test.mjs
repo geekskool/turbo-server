@@ -9,9 +9,14 @@ const router = app.getRouter()
 
 const settingsRouter = new App.Router('/settings')
 const adminRouter = new App.Router('/admin')
+const layoutRouter = new App.Router('/layout')
+const sideBarRouter = new App.Router('/sidebar')
 
 router.addRouter(settingsRouter)
 router.addRouter(adminRouter)
+adminRouter.addRouter(settingsRouter)
+settingsRouter.addRouter(layoutRouter)
+layoutRouter.addRouter(sideBarRouter)
 
 router.post('/', function() {
   this.res.send(this.body)
@@ -37,8 +42,6 @@ adminRouter.post('/createUser', function() {
   this.res.send('admin/createUser route')
 })
 
-const layoutRouter = new App.Router('/layout')
-
 layoutRouter.post('/modify', function() {
   this.res.send('settings/layout/modify route')
 })
@@ -46,8 +49,13 @@ layoutRouter.post('/modify', function() {
 layoutRouter.get('/currentStyle', function() {
   this.res.send('settings/layout/currentStyle route')
 })
+sideBarRouter.get('/status', function() {
+  this.res.send('settings/layout/sidebar/status route')
+})
 
-settingsRouter.addRouter(layoutRouter)
+sideBarRouter.post('/toggle', function() {
+  this.res.send('settings/layout/sidebar/toggle route')
+})
 
 // router.get('/session', function() {
 //   this.res.send({ sess_id: this.session.sess_id })
