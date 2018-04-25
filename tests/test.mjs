@@ -40,7 +40,7 @@ adminRouter.post('/createUser', function() {
 const layoutRouter = new App.Router('/layout')
 
 layoutRouter.post('/modify', function() {
-  this.res.send('settings/create route')
+  this.res.send('settings/layout/modify route')
 })
 
 settingsRouter.addRouter(layoutRouter)
