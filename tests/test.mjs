@@ -2,6 +2,7 @@ import fetch from 'node-fetch'
 import test from 'tape'
 import App from '../lib/server'
 import FormData from 'form-data'
+import signature from 'cookie-signature'
 
 // Start App Server
 const app = new App()
@@ -31,10 +32,16 @@ router.get('/cors', function () {
   this.res.send('cors')
 })
 
+router.get('/download', function () {
+  const file = './public/index.html'
+  const filename = 'app.html'
+  this.res.download(file, filename)
+})
+
 app.listen() // process.env.PORT || 5000
 
 test('responds to requests', async (t) => {
-  t.plan(32)
+  t.plan(35)
   let res, data, cookie, error, headers
 
   try {
@@ -82,7 +89,8 @@ test('responds to requests', async (t) => {
     data = await res.json()
     cookie = res.headers.get('set-cookie')
     const [name, value] = cookie.split(';')[0].split('=')
-    cookie = {[name]: value}
+    const val = signature.unsign(decodeURIComponent(value), 'session')
+    cookie = {[name]: val}
   } catch (e) {
     error = e
   }
@@ -197,6 +205,17 @@ test('responds to requests', async (t) => {
     'Access-Control-Allow-Origin': 'http://localhost:5000',
     'Access-Control-Allow-Methods': 'GET'
   })
+  // Test res.download
+
+  try {
+    res = await fetch('http://127.0.0.1:5000/download')
+    data = res.headers.get('Content-Disposition')
+  } catch (e) {
+    error = e
+  }
+  t.false(error)
+  t.equal(res.status, 200)
+  t.equal(data, 'attachment;filename="app.html"')
 
   // Shutdown App Server
   app.close()
