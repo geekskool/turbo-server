@@ -237,6 +237,17 @@ test('responds to requests', async (t) => {
     'Access-Control-Allow-Origin': 'http://localhost:5000',
     'Access-Control-Allow-Methods': 'GET'
   })
+  // Test res.download
+
+  try {
+    res = await fetch('http://127.0.0.1:5000/download')
+    data = res.headers.get('Content-Disposition')
+  } catch (e) {
+    error = e
+  }
+  t.false(error)
+  t.equal(res.status, 200)
+  t.equal(data, 'attachment;filename="app.html"')
 
   // Shutdown App Server
   app.close()
