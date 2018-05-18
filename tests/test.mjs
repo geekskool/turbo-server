@@ -43,7 +43,7 @@ router.get('/download', function () {
 app.listen() // process.env.PORT || 5000
 
 test('responds to requests', async (t) => {
-  t.plan(35)
+  t.plan(38)
   let res, data, cookie, error, headers
 
   try {
